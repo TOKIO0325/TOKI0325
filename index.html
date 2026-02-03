@@ -2,9 +2,7 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <title>Simple Clock</title>
-
-  <!-- CSS -->
+  <title>Real-Time Clock</title>
   <style>
     body {
       margin: 0;
@@ -36,33 +34,24 @@
 <body>
 
   <div class="clock">
-    <div id="time">00:00:00</div>
-    <div id="date">0000-00-00</div>
+    <div id="time"></div>
+    <div id="date"></div>
   </div>
 
-  <!-- JavaScript -->
   <script>
     function updateClock() {
       const now = new Date();
 
-      const hours = String(now.getHours()).padStart(2, "0");
-      const minutes = String(now.getMinutes()).padStart(2, "0");
-      const seconds = String(now.getSeconds()).padStart(2, "0");
+      const h = String(now.getHours()).padStart(2, "0");
+      const m = String(now.getMinutes()).padStart(2, "0");
+      const s = String(now.getSeconds()).padStart(2, "0");
 
-      const year = now.getFullYear();
-      const month = String(now.getMonth() + 1).padStart(2, "0");
-      const day = String(now.getDate()).padStart(2, "0");
+      const y = now.getFullYear();
+      const mo = String(now.getMonth() + 1).padStart(2, "0");
+      const d = String(now.getDate()).padStart(2, "0");
 
-      document.getElementById("time").textContent =
-        `${hours}:${minutes}:${seconds}`;
+      document.getElementById("time").textContent = `${h}:${m}:${s}`;
+      document.getElementById("date").textContent = `${y}-${mo}-${d}`;
 
-      document.getElementById("date").textContent =
-        `${year}-${month}-${day}`;
-    }
-
-    updateClock();
-    setInterval(updateClock, 1000);
-  </script>
-
-</body>
-</html>
+      // 次の「秒ピッタリ」に合わせて更新
+      const delay = 1000 - now.getMilliseconds();
