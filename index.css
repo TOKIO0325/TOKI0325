@@ -1,0 +1,25 @@
+body {
+  margin: 0;
+  height: 100vh;
+  background: #111;
+  color: #fff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-family: "Segoe UI", sans-serif;
+}
+
+.clock {
+  text-align: center;
+}
+
+#time {
+  font-size: 64px;
+  letter-spacing: 2px;
+}
+
+#date {
+  margin-top: 10px;
+  font-size: 18px;
+  color: #aaa;
+}
