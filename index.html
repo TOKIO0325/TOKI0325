@@ -12,7 +12,7 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      font-family: "Segoe UI", sans-serif;
+      font-family: sans-serif;
     }
 
     .clock {
@@ -21,7 +21,6 @@
 
     #time {
       font-size: 64px;
-      letter-spacing: 2px;
     }
 
     #date {
@@ -34,24 +33,33 @@
 <body>
 
   <div class="clock">
-    <div id="time"></div>
-    <div id="date"></div>
+    <div id="time">--:--:--</div>
+    <div id="date">----</div>
   </div>
 
   <script>
-    function updateClock() {
-      const now = new Date();
+    window.addEventListener("DOMContentLoaded", () => {
+      function updateClock() {
+        const now = new Date();
 
-      const h = String(now.getHours()).padStart(2, "0");
-      const m = String(now.getMinutes()).padStart(2, "0");
-      const s = String(now.getSeconds()).padStart(2, "0");
+        const h = String(now.getHours()).padStart(2, "0");
+        const m = String(now.getMinutes()).padStart(2, "0");
+        const s = String(now.getSeconds()).padStart(2, "0");
 
-      const y = now.getFullYear();
-      const mo = String(now.getMonth() + 1).padStart(2, "0");
-      const d = String(now.getDate()).padStart(2, "0");
+        const y = now.getFullYear();
+        const mo = String(now.getMonth() + 1).padStart(2, "0");
+        const d = String(now.getDate()).padStart(2, "0");
 
-      document.getElementById("time").textContent = `${h}:${m}:${s}`;
-      document.getElementById("date").textContent = `${y}-${mo}-${d}`;
+        document.getElementById("time").textContent = `${h}:${m}:${s}`;
+        document.getElementById("date").textContent = `${y}-${mo}-${d}`;
 
-      // 次の「秒ピッタリ」に合わせて更新
-      const delay = 1000 - now.getMilliseconds();
+        const delay = 1000 - now.getMilliseconds();
+        setTimeout(updateClock, delay);
+      }
+
+      updateClock();
+    });
+  </script>
+
+</body>
+</html>
