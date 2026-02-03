@@ -1,65 +1,130 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8">
-  <title>Real-Time Clock</title>
+  <meta charset="UTF-8" />
+  <title>Chill Work</title>
+
+  <!-- ===== CSS（ここから） ===== -->
   <style>
     body {
       margin: 0;
       height: 100vh;
-      background: #111;
-      color: #fff;
+      background: #0f172a;
+      color: #e5e7eb;
+      font-family: "Segoe UI", sans-serif;
       display: flex;
       justify-content: center;
       align-items: center;
-      font-family: sans-serif;
     }
 
-    .clock {
+    .app {
       text-align: center;
     }
 
-    #time {
-      font-size: 64px;
+    h1 {
+      margin-bottom: 20px;
     }
 
-    #date {
-      margin-top: 10px;
-      font-size: 18px;
-      color: #aaa;
+    #timer {
+      font-size: 64px;
+      margin: 20px 0;
+    }
+
+    button {
+      background: #1e293b;
+      color: white;
+      border: none;
+      padding: 10px 16px;
+      margin: 6px;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #334155;
     }
   </style>
+  <!-- ===== CSS（ここまで） ===== -->
 </head>
-<body>
 
-  <div class="clock">
-    <div id="time">--:--:--</div>
-    <div id="date">----</div>
+<body>
+  <div class="app">
+    <h1>🌿 Chill Work</h1>
+
+    <div id="timer">25:00</div>
+
+    <div class="buttons">
+      <button onclick="startTimer()">Start</button>
+      <button onclick="stopTimer()">Stop</button>
+      <button onclick="resetTimer()">Reset</button>
+    </div>
+
+    <div class="sound">
+      <button onclick="toggleSound()">🌧 雨音 ON / OFF</button>
+    </div>
   </div>
 
+  <!-- 音源（URL版） -->
+  <audio id="rain" loop>
+    <source src="https://cdn.pixabay.com/audio/2022/03/15/audio_5f7a1f6b45.mp3" type="audio/mpeg">
+  </audio>
+
+  <!-- ===== JavaScript（ここから） ===== -->
   <script>
-    window.addEventListener("DOMContentLoaded", () => {
-      function updateClock() {
-        const now = new Date();
+    // タイマー設定
+    let time = 25 * 60;
+    let timerId = null;
+    let isRunning = false;
 
-        const h = String(now.getHours()).padStart(2, "0");
-        const m = String(now.getMinutes()).padStart(2, "0");
-        const s = String(now.getSeconds()).padStart(2, "0");
+    const timerDisplay = document.getElementById("timer");
+    const rain = document.getElementById("rain");
 
-        const y = now.getFullYear();
-        const mo = String(now.getMonth() + 1).padStart(2, "0");
-        const d = String(now.getDate()).padStart(2, "0");
+    function updateDisplay() {
+      const min = String(Math.floor(time / 60)).padStart(2, "0");
+      const sec = String(time % 60).padStart(2, "0");
+      timerDisplay.textContent = min + ":" + sec;
+    }
 
-        document.getElementById("time").textContent = `${h}:${m}:${s}`;
-        document.getElementById("date").textContent = `${y}-${mo}-${d}`;
+    function startTimer() {
+      if (isRunning) return;
+      isRunning = true;
 
-        const delay = 1000 - now.getMilliseconds();
-        setTimeout(updateClock, delay);
+      timerId = setInterval(() => {
+        if (time > 0) {
+          time--;
+          updateDisplay();
+        } else {
+          stopTimer();
+          alert("作業おつかれさま ☕");
+        }
+      }, 1000);
+    }
+
+    function stopTimer() {
+      clearInterval(timerId);
+      isRunning = false;
+    }
+
+    function resetTimer() {
+      stopTimer();
+      time = 25 * 60;
+      updateDisplay();
+    }
+
+    // 雨音 ON / OFF
+    function toggleSound() {
+      if (rain.paused) {
+        rain.volume = 0.4;
+        rain.play().catch(err => {
+          console.error("音声再生エラー:", err);
+        });
+      } else {
+        rain.pause();
       }
+    }
 
-      updateClock();
-    });
+    updateDisplay();
   </script>
-
+  <!-- ===== JavaScript（ここまで） ===== -->
 </body>
 </html>
