@@ -1,12 +1,11 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8" />
-  <title>Chill Work</title>
+<meta charset="UTF-8">
+<title>Chill Work</title>
 
-  <!-- ===== CSS（ここから） ===== -->
-  <style>
-   body {
+<style>
+body {
   margin: 0;
   height: 100vh;
   color: #e5e7eb;
@@ -14,130 +13,145 @@
   display: flex;
   justify-content: center;
   align-items: center;
+  overflow: hidden;
 
-  /* ▼ 背景を雨の窓にする ▼ */
-  background-image: url("https://images.unsplash.com/photo-1501691223387-dd0500403074?q=80&w=1600&auto=format&fit=crop");
+  /* 夜の窓の背景 */
+  background-image: url("https://images.unsplash.com/photo-1515694346937-94d85e41e6f0?q=80&w=1600&auto=format&fit=crop");
   background-size: cover;
   background-position: center;
-  background-attachment: fixed;
 }
+
+/* 雨アニメーション */
+.rain {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  background-image: url("https://i.imgur.com/NM9X6Gk.png");
+  animation: rainMove 0.6s linear infinite;
+  opacity: 0.25;
+}
+
+@keyframes rainMove {
+  from { background-position: 0 0; }
+  to { background-position: 0 100px; }
+}
+
+/* ガラス風パネル */
 .app {
   text-align: center;
-  background: rgba(15, 23, 42, 0.65);
+  background: rgba(10, 15, 30, 0.6);
   padding: 40px;
-  border-radius: 16px;
-  backdrop-filter: blur(8px);
+  border-radius: 20px;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 0 40px rgba(0,0,0,0.6);
 }
 
+h1 {
+  margin-bottom: 20px;
+}
 
-    .app {
-      text-align: center;
-    }
+#timer {
+  font-size: 64px;
+  margin: 20px 0;
+}
 
-    h1 {
-      margin-bottom: 20px;
-    }
+button {
+  background: #1e293b;
+  color: white;
+  border: none;
+  padding: 10px 16px;
+  margin: 6px;
+  border-radius: 8px;
+  cursor: pointer;
+}
 
-    #timer {
-      font-size: 64px;
-      margin: 20px 0;
-    }
-
-    button {
-      background: #1e293b;
-      color: white;
-      border: none;
-      padding: 10px 16px;
-      margin: 6px;
-      border-radius: 8px;
-      cursor: pointer;
-    }
-
-    button:hover {
-      background: #334155;
-    }
-  </style>
-  <!-- ===== CSS（ここまで） ===== -->
+button:hover {
+  background: #334155;
+}
+</style>
 </head>
 
 <body>
-  <div class="app">
-    <h1>🌿 Chill Work</h1>
 
-    <div id="timer">25:00</div>
+<div class="rain"></div>
 
-    <div class="buttons">
-      <button onclick="startTimer()">Start</button>
-      <button onclick="stopTimer()">Stop</button>
-      <button onclick="resetTimer()">Reset</button>
-    </div>
+<div class="app">
+  <h1>🌿 Chill Work</h1>
 
-    <div class="sound">
-      <button onclick="toggleSound()">🌧 雨音 ON / OFF</button>
-    </div>
+  <div id="timer">25:00</div>
+
+  <div>
+    <button onclick="startTimer()">Start</button>
+    <button onclick="stopTimer()">Stop</button>
+    <button onclick="resetTimer()">Reset</button>
   </div>
 
-  <!-- 音源（URL版） -->
-<audio id="rain" loop src="rain.mp3"></audio>
+  <div>
+    <button onclick="toggleSound()">🌧 雨音 ON / OFF</button>
+  </div>
+</div>
 
+<!-- 同じフォルダの rain.mp3 を使用 -->
+<audio id="rainSound" loop src="rain.mp3"></audio>
 
+<script>
+let time = 25 * 60;
+let timerId = null;
+let isRunning = false;
 
-  <!-- ===== JavaScript（ここから） ===== -->
-  <script>
-    // タイマー設定
-    let time = 25 * 60;
-    let timerId = null;
-    let isRunning = false;
+const timerDisplay = document.getElementById("timer");
+const rain = document.getElementById("rainSound");
 
-    const timerDisplay = document.getElementById("timer");
-    const rain = document.getElementById("rain");
+function updateDisplay() {
+  const min = String(Math.floor(time / 60)).padStart(2, "0");
+  const sec = String(time % 60).padStart(2, "0");
+  timerDisplay.textContent = min + ":" + sec;
+}
 
-    function updateDisplay() {
-      const min = String(Math.floor(time / 60)).padStart(2, "0");
-      const sec = String(time % 60).padStart(2, "0");
-      timerDisplay.textContent = min + ":" + sec;
-    }
+function startTimer() {
+  if (isRunning) return;
+  isRunning = true;
 
-    function startTimer() {
-      if (isRunning) return;
-      isRunning = true;
+  // 音も一緒に再生（ブラウザ制限対策）
+  rain.volume = 0.4;
+  rain.play().catch(()=>{});
 
-      timerId = setInterval(() => {
-        if (time > 0) {
-          time--;
-          updateDisplay();
-        } else {
-          stopTimer();
-          alert("作業おつかれさま ☕");
-        }
-      }, 1000);
-    }
-
-    function stopTimer() {
-      clearInterval(timerId);
-      isRunning = false;
-    }
-
-    function resetTimer() {
-      stopTimer();
-      time = 25 * 60;
+  timerId = setInterval(() => {
+    if (time > 0) {
+      time--;
       updateDisplay();
+    } else {
+      stopTimer();
+      alert("作業おつかれさま ☕");
     }
+  }, 1000);
+}
 
-    // 雨音 ON / OFF
-    function toggleSound() {
-      if (rain.paused) {
-        rain.volume = 0.4;
-        rain.play().catch(err => {
-          console.error("音声再生エラー:", err);
-        });
-      } else {
-        rain.pause();
-      }
-    }
+function stopTimer() {
+  clearInterval(timerId);
+  isRunning = false;
+}
 
-    updateDisplay();
-  </script>
-  <!-- ===== JavaScript（ここまで） ===== -->
+function resetTimer() {
+  stopTimer();
+  time = 25 * 60;
+  updateDisplay();
+}
+
+function toggleSound() {
+  if (rain.paused) {
+    rain.volume = 0.4;
+    rain.play().catch(()=>{});
+  } else {
+    rain.pause();
+  }
+}
+
+updateDisplay();
+</script>
+
 </body>
 </html>
